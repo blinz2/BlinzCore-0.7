@@ -33,10 +33,10 @@ import javax.imageio.ImageIO;
 final class ImageStub extends ResourceStub {
 
     enum SourceType {
+
         LOCAL,
         HTTP;
     }
-
     /**
      * Denotes the type of source to be used for this stub, local or remote.
      */
@@ -100,6 +100,7 @@ final class ImageStub extends ResourceStub {
                 }
             }
             texture = (Texture) TextureIO.newTexture(bufferedImage, true);
+            bufferedImage.flush();
             bufferedImage = null;
         }
         return texture;
@@ -109,8 +110,16 @@ final class ImageStub extends ResourceStub {
      * Dumps the object representing the image.
      */
     final void dumpImage() {
-        texture = null;
-        bufferedImage = null;
+        final Texture t = texture;
+        if (t != null) {
+            t.dispose();
+            texture = null;
+        }
+        final BufferedImage i = bufferedImage;
+        if (i != null) {
+            i.flush();
+            bufferedImage = null;
+        }
     }
 
     /**

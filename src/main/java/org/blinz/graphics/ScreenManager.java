@@ -338,13 +338,8 @@ class GraphicsThread implements Runnable {
 
     @Override
     public void run() {
-        long lastImageClearTime = System.currentTimeMillis();
         while (isRunning) {
             canvas.display();
-            if (System.currentTimeMillis() - lastImageClearTime > 30000) {
-                ImageLoader.clearImages();
-                lastImageClearTime = System.currentTimeMillis();
-            }
             try {
                 Thread.sleep(15);
             } catch (InterruptedException ex) {
@@ -368,6 +363,7 @@ class CanvasListener implements GLEventListener {
      */
     final Size drawingArea = new Size();
     final Vector<Screen> screens = new Vector<Screen>();
+    private long lastImageClearTime = System.currentTimeMillis();
 
     @Override
     public void init(final GLAutoDrawable drawable) {
@@ -386,6 +382,11 @@ class CanvasListener implements GLEventListener {
         drawable.getGL().glClear(GL.GL_COLOR_BUFFER_BIT);
         for (final Screen screen : screens) {
             screen.draw(drawable);
+        }
+
+        if (System.currentTimeMillis() - lastImageClearTime > 30000) {
+            ImageLoader.clearImages();
+            lastImageClearTime = System.currentTimeMillis();
         }
     }
 
